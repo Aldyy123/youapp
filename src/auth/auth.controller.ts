@@ -1,27 +1,24 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
   HttpException,
   HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import { SignInDto } from './dto/signin.dto';
 import ResponsePresenter from 'src/presenters/response.presenter';
+import * as bcrypt from 'bcrypt';
 
-@Controller('auth')
+@Controller()
 export class AuthController extends ResponsePresenter {
   constructor(private readonly authService: AuthService) {
     super();
   }
 
-  @Post()
+  @Post('register')
   async create(@Body() createAuthDto: CreateAuthDto) {
     try {
       return await this.authService.create(createAuthDto);
@@ -33,43 +30,28 @@ export class AuthController extends ResponsePresenter {
     }
   }
 
-  @Post('signin')
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
   async signIn(@Body() body: SignInDto) {
     try {
+      if (!body.email && !body.password) {
+        return this.error(
+          'Email and password are required',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
       const user = await this.authService.signIn(body);
       if (!user) {
-        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        return this.error('User not found', HttpStatus.NOT_FOUND);
       }
-      return this.success(user);
+      const isMatch = await bcrypt.compare(body.password, user.password);
+      if (!isMatch) {
+        return this.error('Invalid password', HttpStatus.UNAUTHORIZED);
+      }
+      const token = await this.authService.signInToken(user);
+      return this.success(token, 'Login success');
     } catch (error) {
       return this.error(error.message, error.status);
-    }
-  }
-
-  @Get()
-  findAll() {
-    return this.authService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
-  }
-
-  @Delete(':email')
-  async remove(@Param('email') email: string) {
-    try {
-      return this.authService.remove(email);
-    } catch (error) {
-      throw new HttpException(
-        error.message,
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-      );
     }
   }
 }

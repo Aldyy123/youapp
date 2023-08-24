@@ -15,8 +15,9 @@ import { JwtModule } from '@nestjs/jwt';
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '1d' },
     }),
   ],
-  exports: [MongooseModule],
+  exports: [MongooseModule, JwtModule, AuthService],
 })
 export class AuthModule {}

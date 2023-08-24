@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
+import * as uniqueValidator from 'mongoose-unique-validator';
 
-enum Gender {
+export enum Gender {
   Male = 'Male',
   Female = 'Female',
   Other = 'Other',
@@ -17,23 +18,34 @@ export class User extends mongoose.Document {
 
   @Prop({ type: String, enum: Object.values(Gender) })
   gender: Gender;
-  @Prop()
+
+  @Prop({ type: Date, required: true })
   birthday: Date;
 
-  @Prop()
+  @Prop({ type: String, required: true })
   horoscope: string;
 
-  @Prop()
+  @Prop({ type: String, required: true })
   zodiac: string;
 
-  @Prop()
+  @Prop({ type: Number, required: true })
   weight: number;
 
-  @Prop()
+  @Prop({ type: Number, required: true })
   height: number;
 
-  @Prop()
+  @Prop({ type: String, required: true })
   image_profile: string;
+
+  @Prop({
+    type: mongoose.Types.ObjectId,
+    required: true,
+    unique: true,
+    ref: 'Auth',
+  })
+  auth_id: mongoose.Types.ObjectId;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.plugin(uniqueValidator);

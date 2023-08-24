@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import * as uniqueValidator from 'mongoose-unique-validator';
 
 @Schema()
 export class Auth extends mongoose.Document {
@@ -31,6 +32,6 @@ AuthSchema.pre('save', async function (next) {
     return next(error);
   }
 });
-AuthSchema.plugin(require('mongoose-unique-validator'), {
+AuthSchema.plugin(uniqueValidator, {
   message: 'Error, expected {PATH} to be unique.',
 });

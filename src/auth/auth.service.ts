@@ -26,16 +26,21 @@ export class AuthService {
     return user;
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  async signInToken(user: any) {
+    const payload = {
+      email: user.email,
+      username: user.username,
+      sub: user._id,
+    };
+    return {
+      access_token: await this.jwtService.sign(payload, {
+        privateKey: process.env.JWT_SECRET,
+      }),
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
-
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
+  findOneAndUpdate(id: string, updateAuthDto: UpdateAuthDto) {
+    return this.authModel.findOneAndUpdate({ id }, updateAuthDto);
   }
 
   async remove(email: string) {
