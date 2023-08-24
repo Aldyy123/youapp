@@ -20,9 +20,11 @@ export class AuthService {
   }
 
   async signIn(data: SignInDto) {
-    const user = await this.authModel.findOne({
-      $or: [{ email: data.email }, { username: data.username }],
-    });
+    const user = await this.authModel
+      .findOne({
+        $or: [{ email: data.email }, { username: data.username }],
+      })
+      .select('+password');
     return user;
   }
 

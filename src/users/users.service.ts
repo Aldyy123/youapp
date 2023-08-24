@@ -19,6 +19,7 @@ export class UsersService {
     const user = this.userModel
       .findOne({ auth_id: id })
       .populate('auth_id')
+      .select('+password')
       .exec();
     return user;
   }

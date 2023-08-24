@@ -92,6 +92,7 @@ export class UsersController extends ResponsePresenter {
   async getProfile(@Req() req) {
     try {
       const user = await this.usersService.findOne(req.user.sub);
+      if (!user) return this.error('User not found', HttpStatus.NOT_FOUND);
       return this.success(user, 'User found', HttpStatus.OK);
     } catch (error) {
       return this.error(error.message, error.status);
