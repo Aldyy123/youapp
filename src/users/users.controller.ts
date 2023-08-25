@@ -21,14 +21,10 @@ import { diskStorage } from 'multer';
 import { AuthGuard } from 'src/auth/guards/auth/auth.guard';
 import * as moment from 'moment';
 import { UpdateUsersDto } from './dto/update-users.dto';
-import { AuthService } from 'src/auth/auth.service';
 
 @Controller()
 export class UsersController extends ResponsePresenter {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly authService: AuthService,
-  ) {
+  constructor(private readonly usersService: UsersService) {
     super();
   }
 

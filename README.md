@@ -32,6 +32,14 @@
 $ npm install
 ```
 
+## Environment variables
+
+```bash
+# .env
+MONGO_URI=mongodb://localhost/you-app
+JWT_SECRET=secret
+MONGO_PRODUCTION=url
+```
 ## Running the app
 
 ```bash
