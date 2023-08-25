@@ -13,7 +13,11 @@ import { join } from 'path';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    MongooseModule.forRoot(process.env.MONGO_URI),
+    MongooseModule.forRoot(
+      process.env.ENV === 'development'
+        ? process.env.MONGO_URI
+        : process.env.MONGO_PRODUCTION,
+    ),
     JwtModule,
     MulterModule.register({
       dest: './upload',
